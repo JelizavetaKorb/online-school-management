@@ -1,0 +1,152 @@
+@page
+@model TutorBookingApp.Pages.RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Register</h2>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger">@Model.ErrorMessage</div>
+                    }
+                    
+                    <form method="post">
+                        <div class="mb-3">
+                            <label class="form-label">I am a:</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="Role" value="Student" id="roleStudent" checked>
+                                <label class="form-check-label" for="roleStudent">
+                                    Student
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" asp-for="Role" value="Tutor" id="roleTutor">
+                                <label class="form-check-label" for="roleTutor">
+                                    Tutor
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FullName" class="form-label">Full Name</label>
+                            <input asp-for="FullName" class="form-control" required />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div id="studentFields">
+                            <div class="mb-3">
+                                <label asp-for="GradeLevel" class="form-label">Grade Level</label>
+                                <select asp-for="GradeLevel" class="form-select">
+                                    <option value="">Select Grade</option>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <option value="@i">@i</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="GradeLevel" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="ParentEmail" class="form-label">Parent Email</label>
+                                <input asp-for="ParentEmail" type="email" class="form-control" />
+                                <span asp-validation-for="ParentEmail" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div id="tutorFields" style="display: none;">
+                            <div class="mb-3">
+                                <label asp-for="Subject" class="form-label">Subject</label>
+                                <input asp-for="Subject" class="form-control" />
+                                <span asp-validation-for="Subject" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="MinGradeLevel" class="form-label">Min Grade Level</label>
+                                    <select asp-for="MinGradeLevel" class="form-select">
+                                        <option value="">Select</option>
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <option value="@i">@i</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="MinGradeLevel" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="MaxGradeLevel" class="form-label">Max Grade Level</label>
+                                    <select asp-for="MaxGradeLevel" class="form-select">
+                                        <option value="">Select</option>
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <option value="@i">@i</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="MaxGradeLevel" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="LessonDurationMinutes" class="form-label">Lesson Duration</label>
+                                <select asp-for="LessonDurationMinutes" class="form-select">
+                                    <option value="">Select Duration</option>
+                                    <option value="45">45 minutes</option>
+                                    <option value="60">60 minutes</option>
+                                    <option value="90">90 minutes</option>
+                                </select>
+                                <span asp-validation-for="LessonDurationMinutes" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Phone" class="form-label">Phone (optional)</label>
+                                <input asp-for="Phone" type="tel" class="form-control" />
+                                <span asp-validation-for="Phone" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Bio" class="form-label">Bio (optional)</label>
+                                <textarea asp-for="Bio" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Bio" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Register</button>
+                            <a asp-page="/Login" class="btn btn-secondary">Login</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const studentRadio = document.getElementById('roleStudent');
+            const tutorRadio = document.getElementById('roleTutor');
+            const studentFields = document.getElementById('studentFields');
+            const tutorFields = document.getElementById('tutorFields');
+
+            function toggleFields() {
+                if (studentRadio.checked) {
+                    studentFields.style.display = 'block';
+                    tutorFields.style.display = 'none';
+                } else {
+                    studentFields.style.display = 'none';
+                    tutorFields.style.display = 'block';
+                }
+            }
+            studentRadio.addEventListener('change', toggleFields);
+            tutorRadio.addEventListener('change', toggleFields);
+        });
+    </script>
+}

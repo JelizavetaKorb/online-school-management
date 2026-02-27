@@ -1,0 +1,112 @@
+@page
+@model TutorBookingApp.Pages.Student.BookLessonModel
+@{
+    ViewData["Title"] = "Book Lesson";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Book Lesson with @Model.Tutor?.User.FullName</h2>
+            
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger">@Model.ErrorMessage</div>
+            }
+            
+            @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+            {
+                <div class="alert alert-success">
+                    @Model.SuccessMessage
+                    <a asp-page="/Student/SearchTutors" class="btn btn-sm btn-primary ms-2">Back to Search</a>
+                </div>
+            }
+
+            @if (Model.Tutor != null)
+            {
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Tutor Information</h5>
+                        <p>
+                            <strong>Subject:</strong> @Model.Tutor.Subject<br />
+                            <strong>Lesson Duration:</strong> @Model.Tutor.LessonDurationMinutes minutes<br />
+                            <strong>Grade Levels:</strong> @Model.Tutor.MinGradeLevel - @Model.Tutor.MaxGradeLevel
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Select Date and Time</h5>
+                        <form method="post">
+                            <input type="hidden" asp-for="TutorId" />
+                            
+                            <div class="mb-3">
+                                <label asp-for="BookingDate" class="form-label">Date</label>
+                                <input asp-for="BookingDate" type="date" class="form-control" 
+                                       min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                            </div>
+
+                            @if (Model.AvailableSlots.Any())
+                            {
+                                <div class="mb-3">
+                                    <label class="form-label">Available Time Slots</label>
+                                    <select asp-for="SelectedTimeSlot" class="form-select" required>
+                                        <option value="">Select a time slot</option>
+                                        @foreach (var slot in Model.AvailableSlots)
+                                        {
+                                            <option value="@slot">@slot</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+                            else if (!string.IsNullOrEmpty(Model.BookingDate?.ToString()))
+                            {
+                                <div class="alert alert-warning">
+                                    No available slots for the selected date. Please choose another date.
+                                </div>
+                            }
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" asp-page-handler="CheckAvailability" 
+                                        class="btn btn-secondary">Check Availability</button>
+                                @if (Model.AvailableSlots.Any())
+                                {
+                                    <button type="submit" asp-page-handler="Book" 
+                                            class="btn btn-primary">Confirm Booking</button>
+                                }
+                                <a asp-page="/Student/SearchTutors" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Tutor Availability</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.TutorAvailabilities.Any())
+                    {
+                        <ul class="list-unstyled">
+                            @foreach (var avail in Model.TutorAvailabilities)
+                            {
+                                <li class="mb-2">
+                                    <strong>@((DayOfWeek)avail.DayOfWeek):</strong><br />
+                                    @avail.StartTime.ToString(@"hh\:mm") - @avail.EndTime.ToString(@"hh\:mm")
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No availability set</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,69 @@
+@page
+@model TutorBookingApp.Pages.Student.SearchTutorsModel
+@{
+    ViewData["Title"] = "Search Tutors";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Search Tutors</h2>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <form method="get">
+                <div class="input-group">
+                    <input type="text" name="searchSubject" class="form-control" 
+                           placeholder="Search by subject..." value="@Model.SearchSubject" />
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Tutors.Any())
+    {
+        <div class="row">
+            @foreach (var tutor in Model.Tutors)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@tutor.User.FullName</h5>
+                            <p class="card-text">
+                                <strong>Subject:</strong> @tutor.Subject<br />
+                                <strong>Grade Levels:</strong> @tutor.MinGradeLevel - @tutor.MaxGradeLevel<br />
+                                <strong>Lesson Duration:</strong> @tutor.LessonDurationMinutes minutes<br />
+                                @if (!string.IsNullOrEmpty(tutor.Phone))
+                                {
+                                    <strong>Phone:</strong> @tutor.Phone<br />
+                                }
+                                @if (!string.IsNullOrEmpty(tutor.Bio))
+                                {
+                                    <strong>Bio:</strong> @tutor.Bio<br />
+                                }
+                            </p>
+                            <a asp-page="/Student/BookLesson" asp-route-tutorId="@tutor.TutorId" 
+                               class="btn btn-primary">Book Lesson</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            @if (string.IsNullOrEmpty(Model.SearchSubject))
+            {
+                <p>No tutors available. Please try searching for a subject.</p>
+            }
+            else
+            {
+                <p>No tutors found for "@Model.SearchSubject" that match your grade level.</p>
+            }
+        </div>
+    }
+</div>

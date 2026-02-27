@@ -1,0 +1,105 @@
+@page
+@model TutorBookingApp.Pages.Tutor.ManageAvailabilityModel
+@{
+    ViewData["Title"] = "Manage Availability";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Manage Availability</h2>
+            <a asp-page="/Tutor/Dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Add Availability</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" asp-page-handler="Add">
+                        <div class="mb-3">
+                            <label asp-for="DayOfWeek" class="form-label">Day of Week</label>
+                            <select asp-for="DayOfWeek" class="form-select" required>
+                                <option value="">Select Day</option>
+                                <option value="0">Sunday</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="StartTime" class="form-label">Start Time</label>
+                            <input asp-for="StartTime" type="time" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="EndTime" class="form-label">End Time</label>
+                            <input asp-for="EndTime" type="time" class="form-control" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Add Availability</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Current Availability</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.Availabilities.Any())
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Day</th>
+                                    <th>Time</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var avail in Model.Availabilities.OrderBy(a => a.DayOfWeek))
+                                {
+                                    <tr>
+                                        <td>@((DayOfWeek)avail.DayOfWeek)</td>
+                                        <td>@avail.StartTime.ToString(@"hh\:mm") - @avail.EndTime.ToString(@"hh\:mm")</td>
+                                        <td>
+                                            <form method="post" asp-page-handler="Delete" style="display: inline;">
+                                                <input type="hidden" name="availabilityId" value="@avail.AvailabilityId" />
+                                                <button type="submit" class="btn btn-sm btn-danger" 
+                                                        onclick="return confirm('Are you sure?')">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No availability set. Add your available hours to allow students to book lessons.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

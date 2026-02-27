@@ -1,0 +1,177 @@
+@page
+@model TutorBookingApp.Pages.Student.MyLessonsModel
+@{
+    ViewData["Title"] = "My Lessons";
+}
+
+<div class="container mt-4">
+    <h2>My Lessons</h2>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @Model.SuccessMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @Model.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    
+    @if (Model.BookingToReschedule != null)
+    {
+        <div class="card mb-4 border-primary">
+            <div class="card-header bg-primary text-white">
+                <h5>Reschedule Lesson</h5>
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>Current Booking:</strong><br />
+                    Tutor: @Model.BookingToReschedule.Tutor.User.FullName<br />
+                    Date: @Model.BookingToReschedule.BookingDate.ToShortDateString()<br />
+                    Time: @Model.BookingToReschedule.StartTime.ToString(@"hh\:mm") - @Model.BookingToReschedule.EndTime.ToString(@"hh\:mm")
+                </p>
+
+                <form method="post">
+                    <input type="hidden" asp-for="BookingId" />
+
+                    <div class="mb-3">
+                        <label asp-for="NewBookingDate" class="form-label">New Date</label>
+                        <input asp-for="NewBookingDate" type="date" class="form-control" 
+                               min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    </div>
+
+                    @if (Model.AvailableSlots.Any())
+                    {
+                        <div class="mb-3">
+                            <label class="form-label">Available Time Slots</label>
+                            <select asp-for="NewTimeSlot" class="form-select" required>
+                                <option value="">Select a time slot</option>
+                                @foreach (var slot in Model.AvailableSlots)
+                                {
+                                    <option value="@slot">@slot</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" asp-page-handler="CheckAvailability" 
+                                class="btn btn-secondary">Check Availability</button>
+                        @if (Model.AvailableSlots.Any())
+                        {
+                            <button type="submit" asp-page-handler="Reschedule" 
+                                    class="btn btn-primary">Confirm Reschedule</button>
+                        }
+                        <a asp-page="/Student/MyLessons" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Upcoming Lessons</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.UpcomingLessons.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Tutor</th>
+                                <th>Subject</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var booking in Model.UpcomingLessons)
+                            {
+                                <tr>
+                                    <td>@booking.BookingDate.ToShortDateString()</td>
+                                    <td>
+                                        @booking.StartTime.ToString(@"hh\:mm") - 
+                                        @booking.EndTime.ToString(@"hh\:mm")
+                                    </td>
+                                    <td>@booking.Tutor.User.FullName</td>
+                                    <td>@booking.Tutor.Subject</td>
+                                    <td>
+                                        <a asp-page-handler="Reschedule" 
+                                           asp-route-bookingId="@booking.BookingId" 
+                                           class="btn btn-sm btn-warning">
+                                            Reschedule
+                                        </a>
+                                        <form method="post" class="d-inline" 
+                                              onsubmit="return confirm('Are you sure you want to cancel this lesson?');">
+                                            <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                            <button type="submit" asp-page-handler="Cancel" 
+                                                    class="btn btn-sm btn-danger">
+                                                Cancel
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <p class="text-muted">You have no upcoming lessons.</p>
+                <a asp-page="/Student/SearchTutors" class="btn btn-primary">Find a Tutor</a>
+            }
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Past Lessons</h4>
+        </div>
+        <div class="card-body">
+            @if (Model.PastLessons.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Tutor</th>
+                                <th>Subject</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var booking in Model.PastLessons)
+                            {
+                                <tr>
+                                    <td>@booking.BookingDate.ToShortDateString()</td>
+                                    <td>
+                                        @booking.StartTime.ToString(@"hh\:mm") - 
+                                        @booking.EndTime.ToString(@"hh\:mm")
+                                    </td>
+                                    <td>@booking.Tutor.User.FullName</td>
+                                    <td>@booking.Tutor.Subject</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-muted small">Showing last 10 lessons</p>
+            }
+            else
+            {
+                <p class="text-muted">You have no past lessons.</p>
+            }
+        </div>
+    </div>
+</div>

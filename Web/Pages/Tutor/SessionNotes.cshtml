@@ -1,0 +1,92 @@
+@page
+@model TutorBookingApp.Pages.Tutor.SessionNotesModel
+@{
+    ViewData["Title"] = "Session Notes";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Session Notes</h2>
+            <a asp-page="/Tutor/Dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+
+    @if (Model.Booking != null)
+    {
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4>Session Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Student:</strong> @Model.Booking.Student.User.FullName</p>
+                        <p><strong>Grade Level:</strong> @Model.Booking.Student.GradeLevel</p>
+                        <p><strong>Date:</strong> @Model.Booking.BookingDate.ToShortDateString()</p>
+                        <p><strong>Time:</strong> @Model.Booking.StartTime.ToString(@"hh\:mm") - @Model.Booking.EndTime.ToString(@"hh\:mm")</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Add/Edit Notes</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <input type="hidden" asp-for="BookingId" />
+
+                            <div class="mb-3">
+                                <label asp-for="Grade" class="form-label">Grade</label>
+                                <input asp-for="Grade" class="form-control" 
+                                       placeholder="e.g., A, B+, 95%, Pass" maxlength="50" />
+                                <span asp-validation-for="Grade" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="ProgressDescription" class="form-label">Progress Description</label>
+                                <textarea asp-for="ProgressDescription" class="form-control" rows="4" 
+                                          placeholder="Describe the student's progress during this session..." maxlength="1000"></textarea>
+                                <span asp-validation-for="ProgressDescription" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Notes" class="form-label">Private Notes (Only you can see this)</label>
+                                <textarea asp-for="Notes" class="form-control" rows="4" 
+                                          placeholder="Add any private notes about the session..." maxlength="2000"></textarea>
+                                <span asp-validation-for="Notes" class="text-danger"></span>
+                                <small class="form-text text-muted">These notes are private and only visible to you.</small>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Save Notes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                @if (Model.Booking.SessionNote != null)
+                {
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Current Notes</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Grade:</strong> @(Model.Booking.SessionNote.Grade ?? "Not set")</p>
+                            <p><strong>Progress:</strong><br />@(Model.Booking.SessionNote.ProgressDescription ?? "No description")</p>
+                            <p><strong>Private Notes:</strong><br />@(Model.Booking.SessionNote.Notes ?? "No notes")</p>
+                            <p class="text-muted"><small>Last updated: @Model.Booking.SessionNote.CreatedDate.ToShortDateString()</small></p>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>

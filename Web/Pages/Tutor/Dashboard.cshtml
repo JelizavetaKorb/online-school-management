@@ -1,0 +1,136 @@
+@page
+@model TutorBookingApp.Pages.Tutor.DashboardModel
+@{
+    ViewData["Title"] = "Tutor Dashboard";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Tutor Dashboard</h2>
+            <div class="btn-group" role="group">
+                <a asp-page="/Tutor/EditProfile" class="btn btn-outline-primary">Edit Profile</a>
+                <a asp-page="/Tutor/ManageAvailability" class="btn btn-outline-primary">Manage Availability</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Your Profile</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Subject:</strong> @Model.TutorProfile?.Subject</p>
+                    <p><strong>Grade Levels:</strong> @Model.TutorProfile?.MinGradeLevel - @Model.TutorProfile?.MaxGradeLevel</p>
+                    <p><strong>Lesson Duration:</strong> @Model.TutorProfile?.LessonDurationMinutes minutes</p>
+                    @if (!string.IsNullOrEmpty(Model.TutorProfile?.Phone))
+                    {
+                        <p><strong>Phone:</strong> @Model.TutorProfile.Phone</p>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.TutorProfile?.Bio))
+                    {
+                        <p><strong>Bio:</strong> @Model.TutorProfile.Bio</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Upcoming Bookings</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.UpcomingBookings.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Student</th>
+                                        <th>Grade</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var booking in Model.UpcomingBookings)
+                                    {
+                                        <tr>
+                                            <td>@booking.BookingDate.ToShortDateString()</td>
+                                            <td>@booking.StartTime.ToString(@"hh\:mm") - @booking.EndTime.ToString(@"hh\:mm")</td>
+                                            <td>@booking.Student.User.FullName</td>
+                                            <td>Grade @booking.Student.GradeLevel</td>
+                                            <td>
+                                                <a asp-page="/Tutor/SessionNotes" asp-route-bookingId="@booking.BookingId" 
+                                                   class="btn btn-sm btn-primary">Add Notes</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No upcoming bookings.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Past Sessions</h4>
+                </div>
+                <div class="card-body">
+                    @if (Model.PastBookings.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Student</th>
+                                        <th>Grade Given</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var booking in Model.PastBookings)
+                                    {
+                                        <tr>
+                                            <td>@booking.BookingDate.ToShortDateString()</td>
+                                            <td>@booking.StartTime.ToString(@"hh\:mm") - @booking.EndTime.ToString(@"hh\:mm")</td>
+                                            <td>@booking.Student.User.FullName</td>
+                                            <td>@(booking.SessionNote?.Grade ?? "Not graded")</td>
+                                            <td>
+                                                <a asp-page="/Tutor/SessionNotes" asp-route-bookingId="@booking.BookingId" 
+                                                   class="btn btn-sm btn-secondary">
+                                                   @(booking.SessionNote != null ? "Edit Notes" : "Add Notes")
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No past sessions.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

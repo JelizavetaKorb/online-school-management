@@ -1,0 +1,93 @@
+@page
+@model TutorBookingApp.Pages.Tutor.EditProfileModel
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>Edit Profile</h2>
+            <a asp-page="/Tutor/Dashboard" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+    {
+        <div class="alert alert-success">@Model.SuccessMessage</div>
+    }
+
+    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+    {
+        <div class="alert alert-danger">@Model.ErrorMessage</div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Update Your Information</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        <div class="mb-3">
+                            <label asp-for="Subject" class="form-label">Subject</label>
+                            <input asp-for="Subject" class="form-control" required />
+                            <span asp-validation-for="Subject" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MinGradeLevel" class="form-label">Min Grade Level</label>
+                                <select asp-for="MinGradeLevel" class="form-select" required>
+                                    @for (int i = 1; i <= 12; i++)
+                                    {
+                                        <option value="@i">Grade @i</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="MinGradeLevel" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="MaxGradeLevel" class="form-label">Max Grade Level</label>
+                                <select asp-for="MaxGradeLevel" class="form-select" required>
+                                    @for (int i = 1; i <= 12; i++)
+                                    {
+                                        <option value="@i">Grade @i</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="MaxGradeLevel" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="LessonDurationMinutes" class="form-label">Lesson Duration (minutes)</label>
+                            <select asp-for="LessonDurationMinutes" class="form-select" required>
+                                <option value="45">45 minutes</option>
+                                <option value="60">60 minutes</option>
+                                <option value="90">90 minutes</option>
+                            </select>
+                            <span asp-validation-for="LessonDurationMinutes" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label">Phone (optional)</label>
+                            <input asp-for="Phone" type="tel" class="form-control" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Bio" class="form-label">Bio (optional)</label>
+                            <textarea asp-for="Bio" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Bio" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
